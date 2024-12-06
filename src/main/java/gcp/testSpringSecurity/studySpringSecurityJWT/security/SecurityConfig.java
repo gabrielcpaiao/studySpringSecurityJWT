@@ -1,10 +1,10 @@
 package gcp.testSpringSecurity.studySpringSecurityJWT.security;
 
-import java.net.http.HttpClient;
 import java.util.ArrayList;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,10 +20,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests().anyMatchers("/auth/**").permitAll().anyRequest()
-                .authenticated().and().httpBasic();
-
-        return http.build();
+        return http
+                .csrf(csrf -> csrf.disable()).authorizeHttpRequests(
+                        authorizeConfig -> {
+                            authorizeConfig.requestMatchers("/auth/**").permitAll();
+                            authorizeConfig.anyRequest().authenticated();
+                        })
+                .build();
     }
 
     @Bean
